@@ -32,7 +32,7 @@
   };
   L.control.layers(baseMaps).addTo(map);
 
-  // Fonction pour charger un fichier GeoJSON sans clustering
+  // Fonction pour charger un fichier GeoJSON
   function addGeoJSON(url) {
     fetch(url)
       .then(res => res.json())
