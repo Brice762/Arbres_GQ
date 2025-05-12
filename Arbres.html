@@ -1,0 +1,62 @@
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Carte des arbres</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    html, body, #map {
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const map = L.map('map').setView([49.4935, 1.1012], 13);
+
+  // Fond de carte OpenStreetMap
+  const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  });
+
+  osm.addTo(map);
+
+  // Contrôle des fonds de carte (seulement OSM)
+  const baseMaps = {
+    "OpenStreetMap": osm
+  };
+  L.control.layers(baseMaps).addTo(map);
+
+  // Fonction pour charger un fichier GeoJSON sans clustering
+  function addGeoJSON(url) {
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        L.geoJSON(data, {
+          pointToLayer: (feature, latlng) => L.circleMarker(latlng, {
+            radius: 3,
+            color: '#3388ff',
+            fillOpacity: 0.8
+          })
+        }).addTo(map);
+      });
+  }
+
+  // Liste des fichiers GeoJSON à charger
+  const files = [
+    'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Bailleur.geojson',
+    'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Commune.geojson',
+    'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Dom_pub.geojson',
+    'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Prive.geojson',
+    'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Public.geojson'
+  ];
+
+  files.forEach(addGeoJSON);
+</script>
+</body>
+</html>
