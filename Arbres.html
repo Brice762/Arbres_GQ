@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Carte des arbres</title>
+  <title>Carte des arbres sur Grand-Quevilly</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
@@ -33,7 +33,7 @@
   L.control.layers(baseMaps).addTo(map);
 
   // Fonction pour charger un fichier GeoJSON
-  function addGeoJSON(url) {
+  function addGeoJSON(url, color, name) {
     fetch(url)
       .then(res => res.json())
       .then(data => {
@@ -49,14 +49,34 @@
 
   // Liste des fichiers GeoJSON à charger
   const files = [
-    {'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Bailleur.geojson', color: '#ecf30d'},
-    {'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Commune.geojson', color: '#0de9f3'},
-    {'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Dom_pub.geojson', color : '#28ba14'},
-    {'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Prive.geojson', color: '#f3360d'},
-  {'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Public.geojson', color: '#113be9'}
+    {url: 'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Bailleur.geojson', color: '#ecf30d', name: 'Bailleur'},
+    {url: 'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Commune.geojson', color: '#0de9f3', name: 'Commune'},
+    {url: 'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Dom_pub.geojson', color : '#28ba14', name: 'Domaine Public'},
+    {url: 'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Prive.geojson', color: '#f3360d', name: 'Privé'},
+  {url: 'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Public.geojson', color: '#113be9', name: 'Autre Public'}
   ];
 
-  files.forEach(addGeoJSON);
+  files.forEach(file => addGeoJSON(file.url, file.color));
+  
+  // Création d'un contrôle de légende personnalisé
+const legend = L.control({ position: 'bottomright' });
+
+legend.onAdd = function (map) {
+  const div = L.DomUtil.create('div', 'info legend');
+  div.style.backgroundColor = 'white';
+  div.style.padding = '10px';
+  div.style.border = '1px solid #ccc';
+
+  // Contenu de la légende
+  div.innerHTML += '<strong>Légende</strong><br>';
+  files.forEach(file => {
+    div.innerHTML += `<i style="background:${file.color}; width: 12px; height: 12px; display: inline-block; margin-right: 5px;"></i>${file.name}<br>`;
+  });
+
+  return div;
+};
+
+legend.addTo(map);
 </script>
 </body>
 </html>
