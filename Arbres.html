@@ -74,7 +74,7 @@
         layerGroup.addTo(map);
 
         function updateLabels() {
-          const show = map.getZoom() >= 17;
+          const show = map.getZoom() >= 20;
           layerGroup.eachLayer(layer => {
             if (show) {
               layer.openTooltip();
