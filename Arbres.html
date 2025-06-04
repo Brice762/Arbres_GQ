@@ -42,53 +42,45 @@
   L.control.layers(baseMaps).addTo(map);
 
   // Fonction pour charger un GeoJSON avec des étiquettes dynamiques
-  function addGeoJSON(url, color, name) {
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        const layerGroup = L.layerGroup();
+function addGeoJSON(url, color, name) {
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      const layerGroup = L.layerGroup();
 
-        data.features.forEach((feature, index) => {
-          const coords = feature.geometry.coordinates;
-          const latlng = L.latLng(coords[1], coords[0]);
+      data.features.forEach((feature, index) => {
+        const coords = feature.geometry.coordinates;
+        const latlng = L.latLng(coords[1], coords[0]);
 
-          const circle = L.circleMarker(latlng, {
-            radius: 3,
-            color: color,
-            fillOpacity: 0.8
-          });
-
-          const number = feature.properties.OBJECTID ?? index + 1;
-
-          const tooltip = L.tooltip({
-            permanent: false,
-            direction: 'top',
-            className: 'custom-label',
-            offset: [0, -5]
-          }).setContent(String(number));
-
-          circle.bindTooltip(tooltip);
-          layerGroup.addLayer(circle);
+        const circle = L.circleMarker(latlng, {
+          radius: 3,
+          color: color,
+          fillOpacity: 0.8
         });
 
-        layerGroup.addTo(map);
+        const number = feature.properties.OBJECTID ?? index + 1;
 
-        function updateLabels() {
-          const show = map.getZoom() >= 20;
-          layerGroup.eachLayer(layer => {
-            if (show) {
-              layer.openTooltip();
-            } else {
-              layer.closeTooltip();
-            }
-          });
-        }
+        circle.bindTooltip(String(number), {
+          permanent: false,
+          direction: 'top',
+          className: 'custom-label',
+          offset: [0, -5]
+        });
 
-        map.on('zoomend', updateLabels);
-        updateLabels();
+        // Tooltip s'affiche au survol, se cache automatiquement après
+        circle.on('mouseover', function () {
+          this.openTooltip();
+        });
+        circle.on('mouseout', function () {
+          this.closeTooltip();
+        });
+
+        layerGroup.addLayer(circle);
       });
-  }
 
+      layerGroup.addTo(map);
+    });
+}
   // Liste des fichiers GeoJSON à charger
   const files = [
     {url: 'https://raw.githubusercontent.com/Brice762/Arbres_GQ/refs/heads/main/Bailleur.geojson', color: '#ecf30d', name: 'Bailleur'},
